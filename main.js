@@ -1,4 +1,6 @@
 class Cube {
+    step = 0;
+    distance = 0;
     constructor(tagId, options = {}) {
         this.cube = document.getElementById(tagId);
         this.screen = document.getElementById(tagId).parentNode;
@@ -16,56 +18,81 @@ class Cube {
         this.positionTop = (this.screenHeight - this.elHeight)/2;
         //start
         this.move();
-
     }
 
     move() {
-        requestAnimationFrame(()=>eval(`this.${this.options.direction}Move()`));
+            if (this.options.moveStep.length > this.step) {
+            //получаем количество пикселей, на которое надо передвинуться
+            this.distance = Object.values(this.options.moveStep[this.step])[0];
+            //получаем направление движения
+            const directionName = Object.keys(this.options.moveStep[this.step])[0];
+            switch(directionName) {
+                case 'right': 
+                    this.rightMove();
+                    break;
+                case 'left': 
+                    this.leftMove();
+                    break;
+                case 'up': 
+                    this.upMove();
+                    break;
+                case 'down': 
+                    this.downMove();
+                    break;
+            }
+        }
     }
 
     rightMove() {
-        if (this.screenWidth > this.positionLeft + this.elWidth) {
+        if ((this.screenWidth > this.positionLeft + this.elWidth) && this.distance > 0) {
             this.positionLeft = this.positionLeft + this.speed; 
             cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
+            this.distance = this.distance - this.speed;
             requestAnimationFrame(()=>this.rightMove())
         } else {
-            requestAnimationFrame(()=>this.downMove())
+            this.step++;
+            this.move();
         }
     }
 
     leftMove() {
-        if (this.positionLeft > 0) {
+        if (this.positionLeft > 0 && this.distance > 0) {
             this.positionLeft = this.positionLeft - this.speed;
             cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
+            this.distance = this.distance - this.speed;
             requestAnimationFrame(()=>this.leftMove())
         } else {
-            requestAnimationFrame(()=>this.upMove())
+            this.step++;
+            this.move();
         }
     }
 
     upMove() {
-        if (this.positionTop > 0) {
+        if (this.positionTop > 0 && this.distance > 0) {
             this.positionTop = this.positionTop - this.speed; 
             cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
+            this.distance = this.distance - this.speed;
             requestAnimationFrame(()=>this.upMove())
         } else {
-            requestAnimationFrame(()=>this.rightMove())
+            this.step++;
+            this.move();
         }
     }
 
     downMove() {
-        if (this.screenHeight > this.positionTop + this.elHeight) {
+        if ((this.screenHeight > this.positionTop + this.elHeight) && this.distance > 0) {
             this.positionTop = this.positionTop + this.speed; 
             cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
+            this.distance = this.distance - this.speed;
             requestAnimationFrame(()=>this.downMove())
         } else {
-            requestAnimationFrame(()=>this.leftMove())
+            this.step++;
+            this.move();
         }
-    }
-
-        
+    }        
 }
 
-
-
-const cubeBlack = new Cube('cube', {speed: 10, direction: "left"}) 
+const cubeBlack = new Cube('cube', {speed: 10, 
+                                    moveStep: [{'right': 200}, {'down': 300}, {'left': 400}, {'up': 500}],
+                                    outSpiceAction: 'next' //"next"|"prev" - что делать если достигли края. "next" по часовой, "prev" - против
+                                    }) 
