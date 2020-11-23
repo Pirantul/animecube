@@ -44,12 +44,19 @@ class Cube {
     }
 
     rightMove() {
+        //пока не достигли края, или дистанция не закончилась
         if ((this.screenWidth > this.positionLeft + this.elWidth) && this.distance > 0) {
-            this.positionLeft = this.positionLeft + this.speed; 
-            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             this.distance = this.distance - this.speed;
+            //если перебежали за край, то возвращаемся к краю
+            if (this.distance < 0) {
+                this.positionLeft = this.positionLeft + this.speed + this.distance;     
+            } else {
+                this.positionLeft = this.positionLeft + this.speed; 
+            }
+            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             requestAnimationFrame(()=>this.rightMove())
         } else {
+            //переходим к следующему шагу
             this.step++;
             this.move();
         }
@@ -57,9 +64,13 @@ class Cube {
 
     leftMove() {
         if (this.positionLeft > 0 && this.distance > 0) {
-            this.positionLeft = this.positionLeft - this.speed;
-            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             this.distance = this.distance - this.speed;
+            if (this.distance < 0) {
+                this.positionLeft = this.positionLeft - this.speed - this.distance;     
+            } else {
+                this.positionLeft = this.positionLeft - this.speed; 
+            }
+            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             requestAnimationFrame(()=>this.leftMove())
         } else {
             this.step++;
@@ -69,9 +80,13 @@ class Cube {
 
     upMove() {
         if (this.positionTop > 0 && this.distance > 0) {
-            this.positionTop = this.positionTop - this.speed; 
-            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             this.distance = this.distance - this.speed;
+            if (this.distance < 0) {
+                this.positionTop = this.positionTop - this.speed - this.distance;     
+            } else {
+                this.positionTop = this.positionTop - this.speed;
+            }             
+            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             requestAnimationFrame(()=>this.upMove())
         } else {
             this.step++;
@@ -81,9 +96,13 @@ class Cube {
 
     downMove() {
         if ((this.screenHeight > this.positionTop + this.elHeight) && this.distance > 0) {
-            this.positionTop = this.positionTop + this.speed; 
-            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             this.distance = this.distance - this.speed;
+            if (this.distance < 0) {
+                this.positionTop = this.positionTop + this.speed + this.distance;     
+            } else {
+                this.positionTop = this.positionTop + this.speed; 
+            }           
+            cube.style.transform = `translateX(${this.positionLeft}px) translateY(${this.positionTop}px)`;
             requestAnimationFrame(()=>this.downMove())
         } else {
             this.step++;
@@ -92,7 +111,15 @@ class Cube {
     }        
 }
 
-const cubeBlack = new Cube('cube', {speed: 10, 
-                                    moveStep: [{'right': 200}, {'down': 300}, {'left': 400}, {'up': 500}],
-                                    outSpiceAction: 'next' //"next"|"prev" - что делать если достигли края. "next" по часовой, "prev" - против
-                                    }) 
+const cubeBlack = new Cube('cube', {
+    speed: 5, 
+    moveStep: [ {'right': 200}, 
+                {'down': 300}, 
+                {'left': 400}, 
+                {'up': 500}, 
+                {'left': 160}, 
+                {'down': 320}, 
+                {'left': 1000}, //проверяем что не заходит за край
+                {'right': 340}, 
+                {'up': 200}],
+    }) 
